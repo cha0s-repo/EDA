@@ -1,0 +1,18 @@
+#ignore all but...
+*/db/
+*/incremental_db/
+*.bak
+*.done
+*.dpf
+*.qsf
+*.vwf
+*.qpf
+*.qws
+*.rpt
+*.smsg
+*.sof
+*.summary
+
+*~
+! .gitignore
+
