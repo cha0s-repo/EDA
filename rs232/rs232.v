@@ -20,14 +20,10 @@ module rs232(clk,rst,rx,tx,ledr,dbus,sbus);
 	reg [3:0] stat,loop;
 	reg [7:0] temp;
 
-	parameter ClkFrq=25000000 ;
-	parameter Baud	=115200;
-	parameter DivScale	=ClkFrq/Baud/2;
+	divclk dclk(clk,Dclk,1000);
 
-	divclk dclk(clk,Dclk,115200);
-
-	rs232_rx rever(Dclk,rst,rx,ledr,data);	
-	rs232_tx transer(Dclk,rst,data,ledr,tx);
+	rs232_rx rever(clk,rst,rx,ledr,data);	
+	rs232_tx transer(clk,rst,data,ledr,tx);
 
 	LedShow shownum(temp,stat,dbus,sbus);	
 

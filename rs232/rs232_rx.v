@@ -1,4 +1,4 @@
-// clk: Baud Clock
+// clk: External Clock
 // rx_data: Receive data port
 // ctrl : When a valid data received ctrl reversed
 // data: Received data stored here
@@ -9,32 +9,32 @@ module rs232_rx(clk,rst,rx_data,ctrl,data);
 	output ctrl;
 	output [7:0] data;
 
-	wire Dclk;
+	wire baud8;
 	reg [7:0] data;
 	reg ctrl;
 	reg [3:0] stat;
-
-	always @(posedge clk or negedge rst) begin
+	reg [3:0] step;
+	
+	divclk rx_clk(clk,baud8,921600);				// 921600=115200*8
+	
+	always @(posedge baud8 or negedge rst) begin
 		if(!rst) begin
 			ctrl<=0;
-			stat<=4'd10;
+			stat<=4'd0;
 		end
 		else begin
-			if(rx_data==0 && stat>=10) begin
-				stat<=1;
-			end
-			else begin
 				case (stat)
-					4'd1:	stat<=4'd2;
-					4'd2:	stat<=4'd3;
-					4'd3:	stat<=4'd4;
-					4'd4:	stat<=4'd5;
-					4'd5:	stat<=4'd6;
-					4'd6:	stat<=4'd7;
-					4'd7:	stat<=4'd8;	
-					4'd8:	stat<=4'd9;	
-					4'd9:	stat<=4'd10;
-					default:stat<=4'd10;
+					4'd0: if(!rx_data) stat<=4'd1;
+					4'd1: if(step[3]) stat<=4'd2;
+					4'd2: if(step[3]) stat<=4'd3;
+					4'd3: if(step[3]) stat<=4'd4;
+					4'd4: if(step[3]) stat<=4'd5;
+					4'd5: if(step[3]) stat<=4'd6;
+					4'd6: if(step[3]) stat<=4'd7;
+					4'd7: if(step[3]) stat<=4'd8;	
+					4'd8: if(step[3]) stat<=4'd9;	
+					4'd9: if(step[3]) stat<=4'd0;
+					default:stat<=4'd0;
 				endcase
 
 
@@ -52,5 +52,12 @@ module rs232_rx(clk,rst,rx_data,ctrl,data);
 				endcase	
 			end
 		end
-	end						
+
+	always @(posedge baud8) begin
+		if(stat==0)
+			step<=4'd0;
+		else
+			step <= step[2:0] +1;
+	end
+
 endmodule
