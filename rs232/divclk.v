@@ -1,21 +1,21 @@
 // inclk: External Clock
 // outclk: Output Clock
-// ratio: Divide Ratio
+// ratio: Desired Frequency
 module divclk(inclk,outclk,ratio);
 	input inclk;
-	input [28:0] ratio;
+	input [31:0] ratio;
 	output outclk;
 	
-	reg outclk;
-	reg [28:0] div;
+	parameter RatioWidth = 16;
+	parameter ClkFrq = 25000000;
+	
+	reg [RatioWidth:0] RatioAcc;
 
-// 61a8 > 1ms; 3d090 > 10ms; bebc20 > 1s
+	wire [RatioWidth:0] RatioInc=((ratio<<(RatioWidth-4)) + (ClkFrq>>5)) / (ClkFrq>>4);
+	
+	wire outclk = RatioAcc[RatioWidth];
 	
 	always @(posedge inclk) begin
-		if(div==ratio) begin
-			div<=0;
-			outclk<=~outclk;
-		end else
-			div<=div+1;
+		RatioAcc <= RatioAcc[RatioWidth-1:0] + RatioInc;					// Generated a posedge,lasts a clk period
 	end
 endmodule

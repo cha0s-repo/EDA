@@ -173,7 +173,7 @@ RESERVED_INPUT               : 98        :        :                   :         
 RESERVED_INPUT               : 99        :        :                   :         : 4         :                
 RESERVED_INPUT               : 100       :        :                   :         : 4         :                
 RESERVED_INPUT               : 101       :        :                   :         : 4         :                
-RESERVED_INPUT               : 102       :        :                   :         : 4         :                
+Dclk                         : 102       : output : 2.5 V             :         : 4         : N              
 RESERVED_INPUT               : 103       :        :                   :         : 4         :                
 VCCIO4                       : 104       : power  :                   : 2.5V    : 4         :                
 GND                          : 105       : gnd    :                   :         :           :                
@@ -223,7 +223,7 @@ RESERVED_INPUT               : 148       :        :                   :         
 GND+                         : 149       :        :                   :         : 5         :                
 GND+                         : 150       :        :                   :         : 5         :                
 GND+                         : 151       :        :                   :         : 6         :                
-GND+                         : 152       :        :                   :         : 6         :                
+rst                          : 152       : input  : 2.5 V             :         : 6         : Y              
 CONF_DONE                    : 153       :        :                   :         : 6         :                
 VCCIO6                       : 154       : power  :                   : 2.5V    : 6         :                
 MSEL0                        : 155       :        :                   :         : 6         :                

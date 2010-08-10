@@ -5,8 +5,8 @@
 // dbus: LED show data bus
 // sbus: LED show select bus
 
-module rs232(clk,rx,tx,ledr,dbus,sbus);
-	input clk;
+module rs232(clk,rst,rx,tx,ledr,dbus,sbus);
+	input clk,rst;
 	input rx;
 	output ledr;
 	output tx;
@@ -21,33 +21,19 @@ module rs232(clk,rx,tx,ledr,dbus,sbus);
 	reg [7:0] temp;
 
 	parameter ClkFrq=25000000 ;
-	parameter Baud	=9600;
+	parameter Baud	=115200;
 	parameter DivScale	=ClkFrq/Baud/2;
 
-	initial
-		stat=4'd0;
+	divclk dclk(clk,Dclk,115200);
 
-	divclk dclk(clk,Dclk,DivScale);
-
-	rs232_rx rever(Dclk,rx,ledr,data);	
-	rs232_tx transer(Dclk,data,ledr,tx);
+	rs232_rx rever(Dclk,rst,rx,ledr,data);	
+	rs232_tx transer(Dclk,rst,data,ledr,tx);
 
 	LedShow shownum(temp,stat,dbus,sbus);	
 
-	always @(posedge Dclk or posedge ledr) begin
-		if(ledr==1) begin
-			loop<=0;
-
-		end
-		else begin
-			if(loop<=3) begin
-				loop<=loop+1;
-				case (loop)
-					4'd0: sum[3]<=sum[2];
-					4'd1: sum[2]<=sum[1];
-					4'd2: sum[1]<=sum[0];
-					4'd3: sum[0]<=data;
-				endcase
+	always @(posedge Dclk or negedge rst) begin
+			if(!rst) begin
+				stat<=4'd0;
 			end
 			else begin
 				case (stat)
@@ -66,6 +52,15 @@ module rs232(clk,rx,tx,ledr,dbus,sbus);
 					default: temp<=4'd8;	
 				endcase	
 			end
+	end
+	always@(posedge ledr or negedge rst) begin
+		if(!rst)
+			{sum[3],sum[2],sum[1],sum[0]}<=32'd0;
+		else begin
+				sum[3]<=sum[2];
+				sum[2]<=sum[1];
+				sum[1]<=sum[0];
+				sum[0]<=data;
 		end
-	end	
+	end
 endmodule
